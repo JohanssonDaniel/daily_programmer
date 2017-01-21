@@ -10,7 +10,8 @@ namespace daily_programmer
     {
         static void Main(string[] args)
         {
-            LetterByLetter.Algorithm();
+            RackManagement.Algorithm();
+            Console.ReadLine();
         }
     }
 }
