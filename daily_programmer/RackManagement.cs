@@ -7,20 +7,39 @@ namespace daily_programmer
     {
         public static void Algorithm()
         {
-            Console.WriteLine("This program will check if an given set ");
+            Console.WriteLine("This program will check if a given set ");
             Console.WriteLine("of letters can create a given word");
 
             Console.Write("Input available letters: ");
             string availableString = Console.ReadLine();
 
-            Console.Write("Input wanted word: ");
-            string reqString = Console.ReadLine();
+            string[] words = System.IO.File.ReadAllLines(
+                @"C:\Users\DannePanne\Documents\Arbeten\daily_programmer\daily_programmer\enable1.txt");
 
-            Dictionary<char, int> reqDict = LetterCounter(reqString.ToCharArray());
-            Dictionary<char, int> availableDict = LetterCounter(availableString.ToCharArray());
+            var wordList = new List<String>();
+            wordList.AddRange(words);
 
-            Console.WriteLine("You can create the word: {0}",
-                containsRequiredLetters(reqDict, availableDict));
+            wordList.Sort(SortByLength);
+
+            foreach (string word in wordList)
+            {
+                Dictionary<char, int> reqDict = LetterCounter(word.ToCharArray());
+                Dictionary<char, int> availableDict = LetterCounter(availableString.ToCharArray());
+                if (!availableDict.ContainsKey('?'))
+                {
+                    availableDict.Add('?', 0);
+                }
+                if (containsRequiredLetters(reqDict, availableDict))
+                {
+                    Console.WriteLine(word);
+                    break;
+                }
+            }
+        }
+
+        private static int SortByLength(string word1, string word2)
+        {
+            return word2.Length.CompareTo(word1.Length);
         }
 
         private static Dictionary<char, int> LetterCounter(char[] word)
@@ -45,24 +64,28 @@ namespace daily_programmer
         {
             foreach(KeyValuePair<char, int> req in required)
             {
-                int value = 0;
-                available.TryGetValue(req.Key, out value);
-                
-                if (!available.ContainsKey(req.Key) && !available.ContainsKey('?'))
+                if (available.ContainsKey(req.Key))
                 {
-                    return false;
-                }
-                else if ((value + available['?']) < req.Value)
-                {
-                    return false;
-                }
-                else if (available['?'] > 0)
-                {
-                    available['?'] -= (req.Value - value);
-                    if (available['?'] < 0)
+                    if (available[req.Key] >= req.Value)
+                    {
+                        continue;
+                    }
+                    else if ((available[req.Key] + available['?']) >= req.Value)
+                    {
+                        available['?'] -= (req.Value - available[req.Key]);
+                    }
+                    else
                     {
                         return false;
                     }
+                }
+                else if (available['?'] >= req.Value)
+                {
+                    available['?'] -= req.Value;
+                }
+                else
+                {
+                    return false;
                 }
             }
             return true;

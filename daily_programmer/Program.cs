@@ -10,7 +10,9 @@ namespace daily_programmer
     {
         static void Main(string[] args)
         {
-            RackManagement.Algorithm();
+            //RackManagement.Algorithm();
+            string[] file = System.IO.File.ReadAllLines(@"C:\Users\DannePanne\Documents\Arbeten\daily_programmer\daily_programmer\res\histogram.txt");
+            Histogram.Draw(file);
             Console.ReadLine();
         }
     }
